@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from objects import Plane, Sphere
+from Objects import Plane, Sphere
 
 
 def readline(Type): return map(Type, input().split())
@@ -102,4 +102,4 @@ image = render(objects, v_res, h_res, s, d, E, L, UP, B)
 # plt.imsave("primeira entrega/imagens/olho_1.png", image)
 # plt.imsave("primeira entrega/imagens/polonia_1.png", image)
 # plt.imsave("primeira entrega/imagens/ilhas_1.png", image)
-# plt.imsave("primeira entrega/imagens/canto_1.png", image)
+plt.imsave("primeira entrega/imagens/canto_1.png", image)
