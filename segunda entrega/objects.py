@@ -1,9 +1,17 @@
 import numpy as np
 
+def normalize(V): return V / np.linalg.norm(V)
+
 
 class Object:
     def set_color(self, RGB_color):
         self.color = np.array(RGB_color)
+
+    def set_illumination(self, Ka, Kd, Ks, n):
+        self.Ka = Ka
+        self.Kd = Kd
+        self.Ks = Ks
+        self.n = n
 
 
 class Sphere(Object):
@@ -32,11 +40,11 @@ class Sphere(Object):
 
             return t0
 
+    def normal (self, P): return normalize(P - self.C)
+    
     def __str__(self):
         return "Sphere"
 
-    def normal (self, P):
-        return normalize(P - self.C)
         
 
 class Plane(Object):
@@ -58,8 +66,7 @@ class Plane(Object):
 
         return None
 
+    def normal(self, P): return normalize(self.N)
+
     def __str__(self):
         return "Plane"
-
-    def normal ():
-        return normalize(self.N)
