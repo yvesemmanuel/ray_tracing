@@ -19,8 +19,8 @@ def trace(objs, ray_O, ray_D):
 
 
 def shade(O, objs, P, w, n, Ca, light_sources, e=10E-5):
-    Cp = O.Ka*O.color*Ca
-
+    Cp = O.Ka * O.color * Ca
+    
     for c, L in light_sources:
         l = normalize(L - P)
         r = reflect(l, n)
@@ -35,7 +35,7 @@ def shade(O, objs, P, w, n, Ca, light_sources, e=10E-5):
 
         if len(S) == 0 or (np.dot(l, L - new_P) < t):
             if np.dot(n, l) > 0:
-                Cp += O.Kd * O.color * np.dot(n, l) * c
+                Cp += (O.Kd * O.color) * (np.dot(n, l) * c)
             
             if np.dot(w, r) > 0:
                 Cp += O.Ks * (np.dot(w, r) ** O.n) * c
@@ -43,7 +43,7 @@ def shade(O, objs, P, w, n, Ca, light_sources, e=10E-5):
     return Cp
 
 
-def cast(objs, lightsource, ray_O, ray_D, background_color):
+def cast(objs, lightsource, ray_O, ray_D, background_color, Ca):
     c = background_color
     
     S = trace(objs, ray_O, ray_D)
@@ -53,29 +53,31 @@ def cast(objs, lightsource, ray_O, ray_D, background_color):
     if len(S) != 0:
         t, obj = S[0]
         P = ray_O + (ray_D * t)
-        c = shade(obj, objs, P, -1 * ray_D, obj.normal(P), background_color, lightsource)
+        c = shade(obj, objs, P, -1 * ray_D, obj.normal(P), Ca, lightsource)
 
     return c
 
 
-def reflect(l, n): return 2 * np.dot(l, n) * (n - l)
+def reflect(l, n): return 2 * n * np.dot(l, n) - l
 
 
-def render(objs, lightsource, v_res, h_res, s, d, E, L, up, background_color):
+def render(objs, lightsource, v_res, h_res, s, d, E, L, up, background_color, Ca):
     w = normalize(E - L)
     u = normalize(np.cross(up, w))
     v = np.cross(w, u)
 
     # Fred's trick
     Q = np.zeros((v_res, h_res, 3))
-    img = np.zeros((v_res, h_res, 3))
+    img = np.full((v_res, h_res, 3), background_color)
 
-    Q[0, 0] = E - d*w + s * (((v_res - 1) / 2)*v - ((h_res - 1) / 2)*u)
+    Q[0, 0] = E - d*w + s * (((v_res - 1) / 2) * v - ((h_res - 1) / 2) * u)
 
     for i in range(v_res):
         for j in range(h_res):
             Q[i, j] = Q[0, 0] + s*(j*u - i*v)
-            ray_D = normalize(Q[i, j] - E)
-            img[i, j] = cast(objs, lightsource, E, ray_D, background_color)
+            ray_D = normalize(Q[i, j] - E)           
+            aux = cast(objs, lightsource, E, ray_D, background_color, Ca)
+            aux = aux/max(*aux, 1)
+            img[i][j] = aux
 
-    return img / 255 ** 2
+    return img

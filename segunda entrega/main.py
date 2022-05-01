@@ -23,7 +23,7 @@ if __name__ == "__main__":
     E = np.array((Ex, Ey, Ez))
     L = np.array((Lx, Ly, Lz))
     UP = np.array((UPx, UPy, UPz))
-    B = np.array((Br, Bg, Bb))
+    B = np.array((Br, Bg, Bb))/255
 
     objects = []
 
@@ -53,13 +53,15 @@ if __name__ == "__main__":
     #########################################
 
     CaR, CaG, CaB = readline(float)
-    C = np.array((CaR, CaG, CaB))
+    C = np.array((CaR, CaG, CaB))/255
     
     k_pl = int(input())
     lightsources = []
     for source in range(k_pl):
         Cr, Cg, Cb, Lx, Ly, Lz = readline(float)
-        lightsources.append((np.array((Cr, Cg, Cb)), np.array((Lx, Ly, Lz))))
+        lightsources.append((np.array((Cr, Cg, Cb))/255, np.array((Lx, Ly, Lz))))
 
-    image = render(objects, lightsources, v_res, h_res, s, d, E, L, UP, B)
-    plt.imsave("segunda entrega/imagens/sinuca.png", image)
+    image = render(objects, lightsources, v_res, h_res, s, d, E, L, UP, B, C)
+    #plt.imsave("segunda entrega/imagens/eclipse.png", image)
+    plt.imshow(image)
+    plt.show()
