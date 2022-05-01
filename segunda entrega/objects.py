@@ -5,7 +5,7 @@ def normalize(V): return V / np.linalg.norm(V)
 
 class Object:
     def set_color(self, RGB_color):
-        self.color = np.array(RGB_color)
+        self.color = RGB_color
 
     def set_illumination(self, Ka, Kd, Ks, n):
         self.Ka = Ka
