@@ -45,7 +45,7 @@ def shade(O, objs, P, w, n, Ca, light_sources, e=10E-5):
     return Cp
 
 
-def cast(objs, lightsource, ray_O, ray_D, background_color, Ca, max_depth):
+def cast(objs, lightsource, ray_O, ray_D, background_color, Ca, max_depth, e=10E-5):
     c = background_color
     
     S = trace(objs, ray_O, ray_D)
@@ -57,13 +57,17 @@ def cast(objs, lightsource, ray_O, ray_D, background_color, Ca, max_depth):
         w = -1 * ray_D
         n = obj.normal(P)
         c = shade(obj, objs, P, w, n, Ca, lightsource)
-        
+         
         if max_depth > 0:
             if obj.Kr > 0:
-                c = c + obj.Kr * cast(objs, lightsource, P, reflect (w,n), background_color, Ca, max_depth - 1)
+                r = reflect(w,n)
+                new_P = P + e*r
+                c = c + obj.Kr * cast(objs, lightsource, new_P, reflect (w,n), background_color, Ca, max_depth - 1)
             
             if obj.Kt > 0:
-                c = c + obj.Kt * cast(objs, lightsource, P, refract (obj, P, w, n), background_color, Ca, max_depth - 1)
+                r = refract(obj,P,w,n)
+                new_P = P + e*r
+                c = c + obj.Kt * cast(objs, lightsource, new_P, refract (obj, P, w, n), background_color, Ca, max_depth - 1)
     return c
 
 
