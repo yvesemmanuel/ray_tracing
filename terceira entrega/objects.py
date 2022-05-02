@@ -13,6 +13,10 @@ class Object:
         self.Ks = Ks
         self.n = n
 
+    def set_transparency (self, Kr, Kt, Nr):
+        self.Kr = Kr
+        self.Kt = Kt
+        self.Nr = Nr
 
 class Sphere(Object):
     def __init__(self, C, r):

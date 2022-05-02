@@ -22,11 +22,13 @@ with open(path) as f:
             plane = Plane(np.array(obj['plane']['sample']), np.array(obj['plane']['normal']))
             plane.set_color(np.array(obj['color'])/255)
             plane.set_illumination(obj['ka'], obj['kd'], obj['ks'], obj['exp'])
+            plane.set_transparency(obj['kr'], obj['kt'], obj['index_of_refraction'])
             objects.append(plane)
         if 'sphere' in obj:
             sphere = Sphere(np.array(obj['sphere']['center']), np.array(obj['sphere']['radius']))
             sphere.set_color(np.array(obj['color'])/255)
             sphere.set_illumination(obj['ka'], obj['kd'], obj['ks'], obj['exp'])
+            sphere.set_transparency(obj['kr'], obj['kt'], obj['index_of_refraction'])
             objects.append(sphere)
     ambient_light = np.array(data['ambient_light'])/255
     lights = []
