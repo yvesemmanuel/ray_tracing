@@ -13,8 +13,10 @@ class Object:
         self.Ks = Ks
         self.n = n
 
-    def set_transparency (self, Kr, Kt, Nr):
+    def set_reflection (self, Kr):
         self.Kr = Kr
+    
+    def set_transparency (self, Kt, Nr):
         self.Kt = Kt
         self.Nr = Nr
 

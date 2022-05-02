@@ -54,11 +54,16 @@ def cast(objs, lightsource, ray_O, ray_D, background_color, Ca, max_depth):
     if len(S) != 0:
         t, obj = S[0]
         P = ray_O + (ray_D * t)
-        w = -d
-        n = objs.normal(P)
-        c = shade(obj, objs, P, -1 * ray_D, obj.normal(P), Ca, lightsource)
+        w = -1 * ray_D
+        n = obj.normal(P)
+        c = shade(obj, objs, P, w, n, Ca, lightsource)
         
-        #Continuar aqui a partir dos ifs
+        if max_depth > 0:
+            if obj.Kr > 0:
+                c = c + obj.Kr * cast(objs, lightsource, P, reflect (w,n), background_color, Ca, max_depth - 1)
+            
+            if obj.Kt > 0:
+                c = c + obj.Kt * cast(objs, lightsource, P, refract (obj, P, w, n), background_color, Ca, max_depth - 1)
     return c
 
 
@@ -69,14 +74,17 @@ def refract (obj, P, w, n):
     cos = np.dot(n,w)
     
     if cos < 0:
-        n *= -1/n
+        n *= -1
+        n = 1/n
         cos *= -1
-
-    delta = 1 - ((1/(n**2)) * (1 - cos **2))
+    delta = 1 - (cos**2)
+    delta *= (1/(n**2))
+    delta = 1 - delta
+    #delta = 1 - ((1/(n**2)) * (1 - cos **2))
     if delta < 0:
         raise Exception ("erro")
 
-    aux = (np.sqrt(delta) - 1/n * cos)*n
+    aux = (np.sqrt(delta) - (1/n * cos))*n
     return -1/n * w - aux
 
 
