@@ -63,13 +63,15 @@ def cast(objs, lightsource, ray_O, ray_D, background_color, Ca, max_depth, e=10E
             Rr = reflect(w,n)
             new_Pr = P + e*Rr
             try:
-                if obj.Kr > 0:
-                    c = c + obj.Kr * cast(objs, lightsource, new_Pr, Rr, background_color, Ca, max_depth - 1, e)
-            
                 if obj.Kt > 0:
                     Rt = refract(obj,P,w,n)
                     new_Pt = P + e*Rt
                     c = c + obj.Kt * cast(objs, lightsource, new_Pt, Rt, background_color, Ca, max_depth - 1, e)
+
+                if obj.Kr > 0:
+                    c = c + obj.Kr * cast(objs, lightsource, new_Pr, Rr, background_color, Ca, max_depth - 1, e)
+            
+                
             except:
                 c = c + cast(objs,lightsource, new_Pr, Rr, background_color, Ca, max_depth -1, e)
     return c
@@ -80,18 +82,20 @@ def reflect(l, n): return 2 * n * np.dot(l, n) - l
 
 def refract (obj, P, w, n):
     cos = np.dot(n,w)
-    
+    ior = obj.Nr
+    normal = n * 1
+
     if cos < 0:
-        n *= -1
-        n = 1/n
+        normal *= -1
+        ior = 1/ior
         cos *= -1
     
-    delta = 1 - ((1/(n**2)) * (1 - cos **2))
-    if (delta < 0).any():
+    delta = 1 - ((1/(ior**2)) * (1 - cos **2))
+    if delta < 0:
         raise Exception ("erro")
 
-    aux = (np.sqrt(delta) - (1/n * cos))*n
-    return -1/n * w - aux
+    aux = (np.sqrt(delta) - (1/ior * cos))*normal
+    return -1/ior * w - aux
 
 
 def render(objs, lightsource, v_res, h_res, s, d, E, L, up, background_color, Ca, max_depth):
