@@ -1,5 +1,6 @@
 from logging import raiseExceptions
 from this import d
+from warnings import catch_warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from objects import Plane, Sphere
@@ -59,15 +60,18 @@ def cast(objs, lightsource, ray_O, ray_D, background_color, Ca, max_depth, e=10E
         c = shade(obj, objs, P, w, n, Ca, lightsource)
          
         if max_depth > 0:
-            if obj.Kr > 0:
-                r = reflect(w,n)
-                new_P = P + e*r
-                c = c + obj.Kr * cast(objs, lightsource, new_P, reflect (w,n), background_color, Ca, max_depth - 1)
+            Rr = reflect(w,n)
+            new_Pr = P + e*Rr
+            try:
+                if obj.Kr > 0:
+                    c = c + obj.Kr * cast(objs, lightsource, new_Pr, Rr, background_color, Ca, max_depth - 1, e)
             
-            if obj.Kt > 0:
-                r = refract(obj,P,w,n)
-                new_P = P + e*r
-                c = c + obj.Kt * cast(objs, lightsource, new_P, refract (obj, P, w, n), background_color, Ca, max_depth - 1)
+                if obj.Kt > 0:
+                    Rt = refract(obj,P,w,n)
+                    new_Pt = P + e*Rt
+                    c = c + obj.Kt * cast(objs, lightsource, new_Pt, Rt, background_color, Ca, max_depth - 1, e)
+            except:
+                c = c + cast(objs,lightsource, new_Pr, Rr, background_color, Ca, max_depth -1, e)
     return c
 
 
@@ -81,11 +85,9 @@ def refract (obj, P, w, n):
         n *= -1
         n = 1/n
         cos *= -1
-    delta = 1 - (cos**2)
-    delta *= (1/(n**2))
-    delta = 1 - delta
-    #delta = 1 - ((1/(n**2)) * (1 - cos **2))
-    if delta < 0:
+    
+    delta = 1 - ((1/(n**2)) * (1 - cos **2))
+    if (delta < 0).any():
         raise Exception ("erro")
 
     aux = (np.sqrt(delta) - (1/n * cos))*n

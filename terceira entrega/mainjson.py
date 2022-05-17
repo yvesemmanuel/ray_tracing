@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from objects import Plane, Sphere
 from rendering import render, cast
 
-path='C:\\Users\\lorev\\Documents\\Workspace\\ray_tracing\\terceira entrega\\testes\\espelho2.json'
+path='/Users/lorevilaca/Documents/GithubProjects/ray_tracing/terceira entrega/testes/espelho0.json'
 with open(path) as f:
     data = json.load(f)
     v_res = data['v_res']
